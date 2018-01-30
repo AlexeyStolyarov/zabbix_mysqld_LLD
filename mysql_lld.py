@@ -1,12 +1,13 @@
 #!/usr/bin/python
 
 import ConfigParser, os
-import io
 import re
+import netifaces
 
 
 MY_CNF = "./my.cnf"
-
+ADRESS_MATCH_MASK = "10.21"
+DEFAULT_ADRESS = ""
 
 config = ConfigParser.RawConfigParser(allow_no_value=True)
 config.readfp(open(MY_CNF))
@@ -14,6 +15,15 @@ config.readfp(open(MY_CNF))
 ##print config.get("mysqld999", "port")
 
 LLD_DATA={}
+
+
+for iface in netifaces.interfaces():
+    for iftype, data in netifaces.ifaddresses(iface).items():
+        if iftype in (netifaces.AF_INET,):
+            for info in data:
+                if ADRESS_MATCH_MASK in info['addr']:
+                    DEFAULT_ADRESS = info['addr']
+
 
 
 
@@ -29,11 +39,11 @@ for i in config.sections():
 
     if config.has_option(i,'bind-address'):
         LLD_DATA[i].update({'MYSQL_AGENT_IP':config.get(i,'bind-address') })
+    else:
+        LLD_DATA[i].update({'MYSQL_AGENT_IP': DEFAULT_ADRESS })
 
 
-'''
-max_connections
-'''
+
 
 
 
@@ -60,6 +70,8 @@ if __name__ == '__main__':
 
     print '\t]'
     print '}'
+
+
 
 
 
