@@ -1,12 +1,12 @@
+#jinja2:comment_start_string:'[%' , comment_start_string:'%]', trim_blocks: False
 #!/usr/bin/python
 
 import ConfigParser, os
 import re
 
-MY_CNF = "./my.cnf"
+MY_CNF = "/etc/my.cnf"
 ADRESS_MATCH_MASK = "10.21"
-DEFAULT_ADRESS = ""
-DEFAULT_PORT_MYSQL = "3306"
+DEFAULT_ADRESS = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
 
 config = ConfigParser.RawConfigParser(allow_no_value=True)
 config.readfp(open(MY_CNF))
@@ -32,10 +32,7 @@ for i in config.sections():
         LLD_DATA[i].update({'MYSQL_AGENT_IP': DEFAULT_ADRESS })
 
 
-    if config.has_option(i,'port'):
-        LLD_DATA[i].update({'MYSQL_AGENT_PORT':config.get(i,'port') })
-    else:
-        LLD_DATA[i].update({'MYSQL_AGENT_PORT': DEFAULT_PORT_MYSQL })
+
 
 
 
