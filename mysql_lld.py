@@ -6,6 +6,7 @@ import re
 MY_CNF = "./my.cnf"
 ADRESS_MATCH_MASK = "10.21"
 DEFAULT_ADRESS = ""
+DEFAULT_PORT_MYSQL = "3306"
 
 config = ConfigParser.RawConfigParser(allow_no_value=True)
 config.readfp(open(MY_CNF))
@@ -31,7 +32,10 @@ for i in config.sections():
         LLD_DATA[i].update({'MYSQL_AGENT_IP': DEFAULT_ADRESS })
 
 
-
+    if config.has_option(i,'port'):
+        LLD_DATA[i].update({'MYSQL_AGENT_PORT':config.get(i,'port') })
+    else:
+        LLD_DATA[i].update({'MYSQL_AGENT_PORT': DEFAULT_PORT_MYSQL })
 
 
 
